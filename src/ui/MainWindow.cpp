@@ -159,8 +159,7 @@ void MainWindow::buildMenusAndToolbar()
     fileMenu->addAction(tr("Quit"), QKeySequence::Quit, qApp, &QApplication::quit);
 
     auto *targetMenu = menuBar()->addMenu(tr("&Target"));
-    targetMenu->addAction(addAction->text(), QKeySequence::New, this,
-                          &MainWindow::addTarget);
+    targetMenu->addAction(tr("Add Target…"), this, &MainWindow::addTarget);
     targetMenu->addAction(tr("Edit Selected"), this, &MainWindow::editSelectedTarget);
     targetMenu->addAction(tr("Remove Selected"), this,
                           &MainWindow::removeSelectedTarget);
@@ -224,9 +223,10 @@ void MainWindow::onTargetRemoved(int targetId)
 
 void MainWindow::onSampleReady(const ProbeSample &sample)
 {
+    // Persistence happens via the direct sampleReady→Storage connection made
+    // in main(); this slot only refreshes the UI.
     ++samplesSeen_;
     model_->applySample(sample);
-    storage_->saveSample(sample);
     if (sample.targetId == selectedTargetId())
         charts_->appendSample(sample);
     refreshDiagnosis();
